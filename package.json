@@ -1,0 +1,27 @@
+{
+	"name": "multiplayertemplate",
+	"version": "1.0.0",
+	"description": "",
+	"main": "index.js",
+	"scripts": {
+		"start": "npm run vite build && server/index.js ",
+		"dev": "npm-run-all --parallel dev_server dev_client",
+		"dev_server": "nodemon server/index.js",
+		"dev_client": "vite client"
+	},
+	"keywords": [],
+	"author": "",
+	"license": "ISC",
+	"dependencies": {
+		"express": "^4.17.2",
+		"node-uuid": "^1.4.8",
+		"pinia": "^2.0.9",
+		"socket.io": "^4.4.1",
+		"vue": "^3.2.26"
+	},
+	"devDependencies": {
+		"@vitejs/plugin-vue": "^2.0.1",
+		"npm-run-all": "^4.1.5",
+		"vite": "^2.7.12"
+	}
+}
