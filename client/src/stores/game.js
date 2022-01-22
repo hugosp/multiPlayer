@@ -8,9 +8,13 @@ export const useGameStore = defineStore('game', {
 			name: name,
 			socketId: null,
 			roomId: null,
+			gameStarted: false,
 
 			debug: [],
 			rooms: {},
+			players: {},
+
+			game: {},
 		}
 	},
 	actions: {
@@ -24,15 +28,37 @@ export const useGameStore = defineStore('game', {
 			this.debug.unshift(payload);
 		},
 		update(payload) {
-			this.rooms = payload;
-			if (!payload[this.roomId]) {
+			this.rooms = payload.rooms || {};
+			this.players = payload.players || {};
+
+			if (!this.rooms[this.roomId]) {
 				this.roomId = null;
+				this.gameStarted = false;
 			}
 		},
+		updateMe(payload) {
+			this.players[payload.id] = payload;
+		},
+		updateGameState(state) {
+			this.gameStarted = state;
+		}
 	},
 	getters: {
+		me() {
+			return this.players[this.socketId];
+		},
 		currentRoom() {
 			return this.rooms[this.roomId] || {};
+		},
+		playersInRoom() {
+			if (!this.currentRoom.id) {
+				return [];
+			}
+
+			return [
+				this.players[this.currentRoom.hostID],
+				...this.currentRoom.clients.map(id => this.players[id])
+			]
 		}
 	}
 })

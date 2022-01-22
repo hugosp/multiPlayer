@@ -1,38 +1,49 @@
 
 <template>
-	<section class="main">
-		<div class="in-room" v-if="store.roomId">
-			<h3>ROOM: {{ store.currentRoom.name }}</h3>
-			<Chat :socket="socket"></Chat>
-		</div>
-
-		<div class="right" v-else>
-			<button @click="createRoom">Create room</button>
-			<hr />
-			<h3>ROOMS</h3>
-
-			<div v-for="room in store.rooms" class="roomlist">
-				<span>{{ room.name }}</span>
-				<span>( {{ (room.clients.length + 1) }} )</span>
-				<button @click="joinRoom(room)">Join room</button>
+	<div class="app">
+		<section class="main" v-if="!store.gameStarted">
+			<div class="info">
+				<h1>T3TRiS</h1>
+				<h3 v-if="store.name">PLAYER: {{ store.name }}</h3>
+				<h3 v-if="store.currentRoom.name">ROOM: {{ store.currentRoom.name }}</h3>
+				<button @click="createRoom" v-if="!store.roomId">Create room</button>
+				<button @click="startGame" v-if="store.roomId && store.me.isHost">Start Game</button>
 			</div>
-		</div>
-	</section>
+			<hr />
+			<div class="in-room" v-if="store.roomId">
+				<Chat :socket="socket"></Chat>
+			</div>
 
-	<h4>DebugLog</h4>
-	<section class="debug">
-		<p v-for="row in store.debug">{{ row }}</p>
-	</section>
+			<div class="right" v-else>
+				<h3>ROOMS</h3>
 
-	<details>
-		<summary>Store</summary>
-		<pre><code>{{ store }}</code></pre>
-	</details>
+				<div v-if="Object.values(store.rooms).length" v-for="room in store.rooms" class="roomlist">
+					<span>{{ room.name }}</span>
+					<span>( {{ (room.clients.length + 1) }} / {{ room.maxPlayers }} )</span>
+					<button @click="joinRoom(room)">Join room</button>
+				</div>
+				<div v-else class="roomlist">
+					<span>Currently no rooms...</span>
+					<span></span>
+					<span></span>
+				</div>
+			</div>
+		</section>
+
+		<section class="game" v-if="store.gameStarted">
+			<Tetris :socket="socket"></Tetris>
+		</section>
+
+		<section class="debug">
+			<p v-for="row in store.debug">{{ row }}</p>
+		</section>
+	</div>
 </template>
 
 <script setup>
 
 import Chat from './components/Chat.vue';
+import Tetris from './components/Tetris.vue';
 import { useGameStore } from './stores/game';
 const store = useGameStore();
 
@@ -43,7 +54,7 @@ const socket = new io('ws://localhost:8080', {
 });
 
 const createRoom = () => {
-	const name = prompt('name');
+	const name = prompt('name', Math.floor(Math.random() * 1000) + 1000);
 	socket.emit('host', { name: name, maxPlayers: 8 }, (roomID) => {
 		console.log('created room callback', roomID)
 		store.setRoomId(roomID);
@@ -56,6 +67,11 @@ const joinRoom = (room) => {
 		store.setRoomId(roomID);
 	});
 }
+
+const startGame = () => {
+	socket.emit('startGame');
+}
+
 
 socket.on('connect', (msg) => {
 	console.log('connect', msg)
@@ -73,6 +89,17 @@ socket.on('update', data => {
 	console.log('update', data);
 })
 
+socket.on('updateMe', data => {
+	store.updateMe(data);
+	console.log('updateMe', data);
+})
+
+
+socket.on('startGame', () => {
+	store.updateGameState(true);
+})
+
+
 </script>
 
 
@@ -87,10 +114,15 @@ header {
 	text-align: center;
 	margin-bottom: 40px;
 }
+.app {
+	height: 95vh;
+	display: grid;
+	grid-template-rows: auto 100px;
+}
 .roomlist {
 	width: 100%;
 	display: grid;
-	grid-template-columns: auto 50px 250px;
+	grid-template-columns: auto 80px 250px;
 	backdrop-filter: brightness(0.8);
 	padding: 5px;
 	border-radius: 6px;
@@ -103,13 +135,28 @@ header {
 	}
 	margin-bottom: 10px;
 }
-// .main {
-// 	display: grid;
-// 	gap: 10px;
-// 	grid-template-columns: auto 300px;
-// }
+.main {
+	.info {
+		display: grid;
+		grid-template-columns: 1fr 1fr 1fr 200px;
+		gap: 10px;
+		align-items: center;
+		h1 {
+			margin: 0;
+			padding: 0;
+		}
+		h3 {
+			margin-left: auto;
+		}
+		button {
+			grid-column: 4/5;
+		}
+	}
+	.in-room {
+		height: calc(100% - 50px);
+	}
+}
 .debug {
-	max-height: 100px;
 	overflow-y: auto;
 	backdrop-filter: brightness(0.8);
 	padding: 5px;

@@ -1,17 +1,25 @@
 <template>
-	<div class="chat">
-		<div class="chat-output">
-			<div
-				v-for="row in store.currentRoom.chat"
-				class="chat-row"
-				:class="[row.name == 'SERVER' ? 'system' : '']"
-			>
-				<span>{{ row.time }}</span>
-				<strong>[ {{ row.name }} ]</strong>
-				<span>{{ row.msg }}</span>
+	<div class="chat-wrapper">
+		<div class="chat">
+			<div class="chat-output">
+				<div
+					v-for="row in store.currentRoom.chat"
+					class="chat-row"
+					:class="[row.name == 'SERVER' ? 'system' : '']"
+				>
+					<span>{{ row.time }}</span>
+					<strong>[ {{ row.name }} ]</strong>
+					<span>{{ row.msg }}</span>
+				</div>
 			</div>
+			<input type="text" v-model="chat.input" @keydown.enter="sendChat" />
 		</div>
-		<input type="text" v-model="chat.input" @keydown.enter="sendChat" />
+		<div class="players">
+			<span
+				v-for="player in store.playersInRoom"
+				:class="[player.isHost ? 'host' : '']"
+			>{{ player.name }} {{ player.isHost ? ' (Host)' : '' }}</span>
+		</div>
 	</div>
 </template>
 
@@ -37,8 +45,23 @@ const sendChat = () => {
 
 
 <style lang="scss">
+.chat-wrapper {
+	height: inherit;
+	display: grid;
+	grid-template-columns: auto 200px;
+	gap: 10px;
+	.players {
+		border: 2px solid #fff;
+		display: grid;
+		height: 100%;
+		grid-auto-rows: 20px;
+		.host {
+			font-weight: bold;
+		}
+	}
+}
 .chat {
-	height: 30vh;
+	height: 100%;
 	display: grid;
 	grid-template-rows: auto 45px;
 	border: 2px solid #fff;
