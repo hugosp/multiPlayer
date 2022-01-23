@@ -20,7 +20,8 @@
 				<div v-if="Object.values(store.rooms).length" v-for="room in store.rooms" class="roomlist">
 					<span>{{ room.name }}</span>
 					<span>( {{ (room.clients.length + 1) }} / {{ room.maxPlayers }} )</span>
-					<button @click="joinRoom(room)">Join room</button>
+					<button v-if="room.isRunning" disabled>Game running</button>
+					<button v-else @click="joinRoom(room)">Join room</button>
 				</div>
 				<div v-else class="roomlist">
 					<span>Currently no rooms...</span>
@@ -97,6 +98,11 @@ socket.on('updateMe', data => {
 
 socket.on('startGame', () => {
 	store.updateGameState(true);
+})
+
+socket.on('winner', (data) => {
+	console.log('WINNER', data);
+	store.setWinner(data);
 })
 
 

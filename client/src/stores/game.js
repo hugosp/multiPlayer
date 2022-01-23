@@ -9,6 +9,7 @@ export const useGameStore = defineStore('game', {
 			socketId: null,
 			roomId: null,
 			gameStarted: false,
+			gameWinner: false,
 
 			debug: [],
 			rooms: {},
@@ -41,6 +42,9 @@ export const useGameStore = defineStore('game', {
 		},
 		updateGameState(state) {
 			this.gameStarted = state;
+		},
+		setWinner(data) {
+			this.gameWinner = this.players[data.id]
 		}
 	},
 	getters: {

@@ -52,15 +52,31 @@ watchEffect(() => {
 
 
 <template>
-	<canvas with="240" height="400" ref="canvas"></canvas>
+	<div class="tetris">
+		<div class="center winner" v-if="store.gameWinner.id === store.me.id">WINNER!</div>
+		<div class="center looser" v-if="store.me.isKilled">LOOSER!</div>
+		<canvas width="240" height="400" ref="canvas"></canvas>
+	</div>
 </template>
 
 
 <style lang="scss" scoped>
 canvas {
-	margin: auto;
+	// margin: auto;
+	margin-top: 0;
 	border: solid 0.2em #fff;
-	// width: 100%;
+	// width: 40vw;
 	height: 80vh;
+}
+.tetris {
+	position: relative;
+	.center {
+		position: absolute;
+		top: 50%;
+		left: 15%;
+		font-weight: bold;
+		font-size: 5vw;
+		transform: rotate(45deg) translate(-15%, -50%);
+	}
 }
 </style>

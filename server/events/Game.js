@@ -6,6 +6,9 @@ class Game extends EventModel {
 		console.log('START GAME');
 		const room = this.findRoomByID(socket.id);
 
+		room.isRunning = true;
+		room.startTime = (new Date).getTime();
+
 		this.broadcastDebugMsg('Game started in room: ' + room.name);
 		this.emitToRoom(room.id, 'startGame')
 
@@ -16,9 +19,53 @@ class Game extends EventModel {
 			this.players[id].reset();
 		});
 
-
 		this.sendState(room.id);
+
+		setInterval(() => this.gameLoop(room.id), 1000 / 30);
 	}
+
+	gameLoop(roomID) {
+
+		const room = this.rooms[roomID];
+
+		// if room has closed
+		if (!room) {
+			clearInterval(() => this.gameLoop(roomID));
+			return;
+		}
+
+		// if only one player alive
+		const alive = room.playersIds().filter(id => this.players[id].isKilled === false);
+
+		if (alive.length === 1) {
+			clearInterval(() => this.gameLoop(roomID));
+			this.emitToRoom(room.id, 'winner', { id: alive[0] })
+			return;
+		}
+
+		const time = (new Date).getTime();
+		const deltaTime = time - room.lastUpdate;
+
+		let modified = false;
+		room.playersIds().forEach(id => {
+			// check player still in game
+			if (this.players[id] && !this.players[id].isKilled) {
+				this.players[id].dropCounter += deltaTime;
+				// dropFPS
+				if (this.players[id].dropCounter > this.players[id].dropInterval) {
+					this.players[id].drop();
+					this.players[id].dropCounter = 0;
+					modified = true;
+				}
+			}
+		});
+		if (modified) {
+			this.sendState(room.id);
+		}
+
+		room.lastUpdate = time;
+	}
+
 
 	sendState(roomID) {
 		const players = {};

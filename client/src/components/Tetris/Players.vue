@@ -4,20 +4,54 @@ import { useGameStore } from '../../stores/game';
 
 const store = useGameStore();
 
-// const sortedPlayers = Object.values(store.playersInRoom).sort((a, b) => a.id.localeCompare(b.id))
-
 </script>
 
 
 <template>
 	<div class="players">
-		<div class="player" v-for="player in store.playersInRoom" :key="player.id">
-			<h3>{{ player.name }} - {{ player.score }}</h3>
-			<SmallBoard :player="player"></SmallBoard>
+		<div
+			class="player"
+			v-for="player in store.playersInRoom.filter(p => p.id != store.me.id)"
+			:key="player.id || 'gameover'"
+		>
+			<div v-if="!player.id">Player left...</div>
+
+			<div v-else>
+				<SmallBoard :player="player"></SmallBoard>
+				<div class="info">
+					<strong style="grid-column: span 2;">{{ player.name }}</strong>
+					<span>Score:</span>
+					<span>{{ player.score }}</span>
+					<span>Lines:</span>
+					<span>{{ player.lines }}</span>
+					<span>Level:</span>
+					<span>{{ player.level }}</span>
+				</div>
+			</div>
 		</div>
 	</div>
 </template>
 
 
 <style lang="scss" scoped>
+.players {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, 160px);
+	grid-auto-rows: 320px;
+	gap: 10px;
+	.player {
+		padding: 10px;
+		border: 1px solid #aaa;
+		border-radius: 6px;
+		text-align: center;
+		.info {
+			display: grid;
+			grid-template-columns: min-content auto;
+			strong {
+				border-bottom: 1px solid #aaa;
+				padding-bottom: 5px;
+			}
+		}
+	}
+}
 </style>

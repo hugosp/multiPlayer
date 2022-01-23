@@ -49,7 +49,7 @@ onUnmounted(() => {
 <style lang="scss">
 .tetris {
 	display: grid;
-	grid-template-columns: 250px auto 200px;
+	grid-template-columns: 30% auto 120px;
 	gap: 10px;
 }
 </style>

@@ -4,11 +4,21 @@ class Room {
 		this.name = options.name;
 		this.hostID = clientID;
 
+		this.isRunning = false;
+
+		// gameloop
+		this.startTime = 0;
+		this.lastUpdate = 0;
+
 		this.maxPlayers = options.maxPlayers || 10;
 
 		this.clients = [];
 		this.chat = [];
 
+	}
+
+	playersIds() {
+		return [this.hostID, ...this.clients];
 	}
 
 	addClient(clientID) {

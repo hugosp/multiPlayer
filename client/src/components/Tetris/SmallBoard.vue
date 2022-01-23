@@ -46,15 +46,15 @@ watchEffect(() => {
 
 
 <template>
-	<canvas with="120" height="200" ref="canvas"></canvas>
+	<canvas width="120" height="200" ref="canvas"></canvas>
 </template>
 
 
 <style lang="scss" scoped>
 canvas {
 	margin: auto;
-	border: solid 2px #fff;
-	width: 100%;
-	// height: 75vh;
+	// border: solid 2px #fff;
+	// width: 100%;
+	height: 200px;
 }
 </style>
