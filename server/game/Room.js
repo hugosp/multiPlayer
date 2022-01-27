@@ -9,6 +9,7 @@ class Room {
 		// gameloop
 		this.startTime = 0;
 		this.lastUpdate = 0;
+		this.intervalID = 0;
 
 		this.maxPlayers = options.maxPlayers || 10;
 

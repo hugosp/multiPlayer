@@ -13,10 +13,12 @@ io.on('connection', (socket) => {
 
 	lobby.connect(socket);
 	// Lobby events
-	socket.on('disconnect', () => lobby.disconnect(socket));
 	socket.on('join', (options, callback) => lobby.connectClientToRoom(socket, options, false, callback));
 	socket.on('host', (options, callback) => lobby.connectClientToRoom(socket, options, true, callback));
 	socket.on('chatMessage', (msg) => lobby.chat(socket, msg));
+	socket.on('changeName', (name) => lobby.changeName(socket, name));
+
+	socket.on('disconnect', () => game.disconnect(socket).then(() => lobby.disconnect(socket)));
 
 	// Game events
 	socket.on('startGame', (options) => game.start(socket, options));

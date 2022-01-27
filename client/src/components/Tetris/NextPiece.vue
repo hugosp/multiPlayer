@@ -54,11 +54,12 @@ watchEffect(() => {
 .next {
 	background: #000;
 	border: 2px solid #fff;
-	text-align: center;
+	display:grid;
+
 	canvas {
+		margin:auto;
 		width: 70px;
 		height: 70px;
-		padding: 1rem;
 	}
 }
 </style>

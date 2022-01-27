@@ -1,13 +1,17 @@
 
 <template>
 	<div class="app">
+		<h1>T3TRiS</h1>
 		<section class="main" v-if="!store.gameStarted">
 			<div class="info">
-				<h1>T3TRiS</h1>
-				<h3 v-if="store.name">PLAYER: {{ store.name }}</h3>
+				<h3 v-if="store.name" @click="changeName" class="click">PLAYER: {{ store.name }}</h3>
 				<h3 v-if="store.currentRoom.name">ROOM: {{ store.currentRoom.name }}</h3>
 				<button @click="createRoom" v-if="!store.roomId">Create room</button>
-				<button @click="startGame" v-if="store.roomId && store.me.isHost">Start Game</button>
+				<button
+					@click="startGame"
+					v-if="store.roomId && store.me.isHost"
+					:disabled="store.playersInRoom.length < 2"
+				>Start Game</button>
 			</div>
 			<hr />
 			<div class="in-room" v-if="store.roomId">
@@ -48,11 +52,18 @@ import Tetris from './components/Tetris.vue';
 import { useGameStore } from './stores/game';
 const store = useGameStore();
 
-const socket = new io('ws://localhost:8080', {
+//const socket = new io();
+
+const socket = new io(location.href, {
 	query: {
 		name: store.name,
 	}
 });
+
+const changeName = () => {
+	store.name = prompt('NAME:', store.name);
+	socket.emit('changeName', store.name);
+}
 
 const createRoom = () => {
 	const name = prompt('name', Math.floor(Math.random() * 1000) + 1000);
@@ -112,19 +123,38 @@ socket.on('winner', (data) => {
 
 
 <style lang="scss">
-@import url("https://cdn.jsdelivr.net/npm/water.css@2/out/water.min.css");
+@import url("https://fonts.googleapis.com/css2?family=Major+Mono+Display&display=swap");
+@import url("https://cdn.jsdelivr.net/npm/water.css@2/out/dark.css");
 body {
 	max-width: 90vw;
+	overflow: hidden;
 }
 header {
 	text-align: center;
 	margin-bottom: 40px;
 }
+h1,
+h2,
+h3,
+h4,
+h5 {
+	text-transform: lowercase;
+	font-family: "Major Mono Display", monospace;
+}
+h1 {
+	font-size: 5vw;
+	margin: auto;
+}
 .app {
 	height: 95vh;
 	display: grid;
-	grid-template-rows: auto 100px;
+	grid-template-rows: 8vw auto 100px;
+	gap:10px;
 }
+.click {
+	cursor: pointer;
+}
+
 .roomlist {
 	width: 100%;
 	display: grid;
@@ -144,16 +174,14 @@ header {
 .main {
 	.info {
 		display: grid;
-		grid-template-columns: 1fr 1fr 1fr 200px;
+		grid-template-columns: 1fr 1fr 200px;
 		gap: 10px;
 		align-items: center;
 		h1 {
 			margin: 0;
 			padding: 0;
 		}
-		h3 {
-			margin-left: auto;
-		}
+
 		button {
 			grid-column: 4/5;
 		}

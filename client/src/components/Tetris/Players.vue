@@ -36,20 +36,20 @@ const store = useGameStore();
 <style lang="scss" scoped>
 .players {
 	display: grid;
-	grid-template-columns: repeat(auto-fill, 160px);
-	grid-auto-rows: 320px;
-	gap: 10px;
+	grid-template-columns: repeat(auto-fill, 100px);
+	grid-auto-rows: 255px;
+	gap: 5px;
 	.player {
-		padding: 10px;
+		padding: 2px;
 		border: 1px solid #aaa;
-		border-radius: 6px;
+		border-radius: 5px;
 		text-align: center;
 		.info {
 			display: grid;
 			grid-template-columns: min-content auto;
 			strong {
 				border-bottom: 1px solid #aaa;
-				padding-bottom: 5px;
+				padding-bottom: 2px;
 			}
 		}
 	}

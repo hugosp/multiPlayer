@@ -4,18 +4,17 @@ const app = express();
 const server = require('http').createServer(app);
 const { Server } = require('socket.io');
 
-app.use(express.static(path.join(__dirname, '/../client/dist')));
+app.use(express.static(path.join(__dirname, '/../../client/dist')));
 
 const io = new Server(server, {
 	// Development CORS with vite
-	cors: {
+/*	cors: {
 		origin: "http://localhost:3000",
 		methods: ["GET", "POST"]
-	}
+	}*/
 });
 
 const PORT = process.env.PORT || 8080;
-
 
 server.listen(PORT, function () {
 	console.log(`listening on localhost:${PORT}`);

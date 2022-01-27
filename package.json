@@ -4,10 +4,11 @@
 	"description": "",
 	"main": "index.js",
 	"scripts": {
-		"start": "vite build && server/index.js ",
+		"start": "vite build client && node server/index.js ",
 		"dev": "npm-run-all --parallel dev_server dev_client",
 		"dev_server": "nodemon server/index.js",
-		"dev_client": "vite client"
+		"dev_client": "vite build --watch client",
+		"dev_client_local": "vite client"
 	},
 	"keywords": [],
 	"author": "",

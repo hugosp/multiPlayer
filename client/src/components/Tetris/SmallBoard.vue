@@ -55,6 +55,6 @@ canvas {
 	margin: auto;
 	// border: solid 2px #fff;
 	// width: 100%;
-	height: 200px;
+	height: 150px;
 }
 </style>

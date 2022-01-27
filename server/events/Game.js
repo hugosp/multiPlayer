@@ -2,6 +2,21 @@ const EventModel = require('./EventModel');
 
 class Game extends EventModel {
 
+	constructor(io, players, rooms) {
+		super(io, players, rooms)
+
+		this.intervalIDs = {};
+	}
+
+	disconnect(socket) {
+		return new Promise((resolve, reject) => {
+			if (this.players[socket.id].isHost) {
+				clearInterval(this.intervalIDs[this.players[socket.id].room]);
+				resolve();
+			}
+		})
+	}
+
 	start(socket, options) {
 		console.log('START GAME');
 		const room = this.findRoomByID(socket.id);
@@ -21,24 +36,18 @@ class Game extends EventModel {
 
 		this.sendState(room.id);
 
-		setInterval(() => this.gameLoop(room.id), 1000 / 30);
+		this.intervalIDs[room.id] = setInterval(() => this.gameLoop(room.id), 1000 / 30);
 	}
 
 	gameLoop(roomID) {
 
 		const room = this.rooms[roomID];
 
-		// if room has closed
-		if (!room) {
-			clearInterval(() => this.gameLoop(roomID));
-			return;
-		}
-
 		// if only one player alive
-		const alive = room.playersIds().filter(id => this.players[id].isKilled === false);
+		const alive = room.playersIds().filter(id => this.players[id]?.isKilled === false);
 
 		if (alive.length === 1) {
-			clearInterval(() => this.gameLoop(roomID));
+			clearInterval(this.intervalIDs[room.id]);
 			this.emitToRoom(room.id, 'winner', { id: alive[0] })
 			return;
 		}

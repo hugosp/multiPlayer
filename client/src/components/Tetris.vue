@@ -2,8 +2,10 @@
 	<div class="tetris">
 		<Players></Players>
 		<TetrisBoard></TetrisBoard>
-		<div class="next">
+		<div class="right">
 			<NextPiece v-for="piece in store.me.next" :piece="piece"></NextPiece>
+			<MyScore></MyScore>
+			<Chat :socket="props.socket" :noplayers="true" :wide="true"></Chat>
 		</div>
 	</div>
 </template>
@@ -11,7 +13,9 @@
 <script setup>
 import { onMounted, onUnmounted } from 'vue';
 import TetrisBoard from './Tetris/TetrisBoard.vue';
+import Chat from './Chat.vue';
 import Players from './Tetris/Players.vue';
+import MyScore from './Tetris/MyScore.vue';
 import NextPiece from './Tetris/NextPiece.vue';
 import { useGameStore } from '../stores/game';
 const store = useGameStore();
@@ -49,7 +53,14 @@ onUnmounted(() => {
 <style lang="scss">
 .tetris {
 	display: grid;
-	grid-template-columns: 30% auto 120px;
+	grid-template-columns: 1fr 1fr 1fr;
 	gap: 10px;
+
+	.right {
+		display: grid;
+		grid-template-columns: 1fr 1fr 1fr;
+		grid-template-rows: 100px 200px auto;
+		gap: 10px;
+	}
 }
 </style>

@@ -33,6 +33,12 @@ class Lobby extends EventModel {
 	}
 
 
+	changeName(socket, name) {
+		this.players[socket.id].name = name;
+		this.sendUpdate()
+	}
+
+
 	async connectClientToRoom(socket, options, isHost, callback) {
 
 		const roomID = isHost ? uuid.v4() : options.id;

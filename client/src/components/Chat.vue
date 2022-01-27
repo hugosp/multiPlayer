@@ -1,5 +1,5 @@
 <template>
-	<div class="chat-wrapper">
+	<div class="chat-wrapper" :class="[props.wide ? 'wide' : '']">
 		<div class="chat">
 			<div class="chat-output">
 				<div
@@ -14,7 +14,7 @@
 			</div>
 			<input type="text" v-model="chat.input" @keydown.enter="sendChat" />
 		</div>
-		<div class="players">
+		<div class="players" v-if="!props.noplayers">
 			<span
 				v-for="player in store.playersInRoom"
 				:class="[player.isHost ? 'host' : '']"
@@ -28,7 +28,7 @@
 import { reactive } from 'vue';
 import { useGameStore } from '../stores/game';
 
-const props = defineProps(['socket'])
+const props = defineProps(['socket','noplayers',"wide"])
 
 const store = useGameStore();
 
@@ -50,6 +50,12 @@ const sendChat = () => {
 	display: grid;
 	grid-template-columns: auto 200px;
 	gap: 10px;
+
+	&.wide {
+		grid-column: span 3;
+		grid-template-columns: 1fr;
+	}
+
 	.players {
 		border: 2px solid #fff;
 		display: grid;
